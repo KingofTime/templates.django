@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "template_django"
+version = "0.1.0"
+description = "Template for new apps in Django"
+authors = ["Kingoftime <antonio_neto77@hotmail.com.br>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+python-dotenv = "^1.0.1"
+Django = "^5.1.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

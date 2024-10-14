@@ -1,0 +1,51 @@
+version: '3.9'
+
+services:
+  database:
+    image: postgres:16.4
+    container_name: template_django__database
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - dbdata:/var/lib/postgres/data
+    ports:
+      - ${DB_FORWARD_PORT}:${DB_PORT}
+    networks:
+      - template_django__network
+
+  api:
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile
+      target: ${APP_ENVIRONMENT}
+    container_name: template_django__api
+    depends_on:
+      database:
+        condition: service_healthy
+    command: python manage.py runserver 0.0.0.0:${APP_PORT}
+    volumes:
+      - .:/app
+    ports:
+      - ${APP_FORWARD_PORT}:${APP_PORT}
+    stdin_open: true
+    tty: true
+    networks:
+      - template_django__network
+
+volumes:
+  dbdata:
+
+
+networks:
+  template_django__network:
+    driver: bridge
+    external: true
